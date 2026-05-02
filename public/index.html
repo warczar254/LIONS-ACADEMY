@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lions Soccer Academy Rongai</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b0b12;--bg2:#111119;--card:#171724;--card-h:#1d1d30;--border:#28283e;--border-l:#33335a;--fg:#eaeaf4;--fg2:#a0a0c0;--muted:#606088;--accent:#d4a017;--accent-l:#edc030;--accent-d:#b08610;--accent-g:rgba(212,160,23,.12);--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--info:#38bdf8;--sidebar-w:260px;--r:10px;--rl:16px;--shadow:0 4px 30px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth}body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4,h5{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.02em}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+#toast-container{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px}
+.toast{padding:14px 20px;border-radius:var(--r);color:#fff;font-size:14px;font-weight:500;animation:slideInR .3s ease;min-width:280px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
+.toast.success{background:linear-gradient(135deg,#16a34a,#22c55e)}.toast.error{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.toast.info{background:linear-gradient(135deg,#0284c7,#38bdf8)}.toast.warning{background:linear-gradient(135deg,#d97706,#f59e0b)}
+@keyframes slideInR{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOutR{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:9000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.active{opacity:1;pointer-events:all}.modal-box{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);width:90%;max-width:520px;max-height:85vh;overflow-y:auto;transform:scale(.92);transition:transform .25s;box-shadow:var(--shadow)}
+.modal-overlay.active .modal-box{transform:scale(1)}.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
+.modal-header h3{font-size:18px;color:var(--accent)}.modal-close{background:none;border:none;color:var(--fg2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:.2s}
+.modal-close:hover{background:var(--border);color:var(--fg)}.modal-body{padding:24px}
+#auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.auth-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0b0b12 0%,#1a1008 40%,#0b0b12 70%,#0d0818 100%);z-index:0}
+.auth-bg::before{content:'';position:absolute;top:-40%;right:-20%;width:700px;height:700px;background:radial-gradient(circle,rgba(212,160,23,.08) 0%,transparent 70%);animation:pulse 6s ease-in-out infinite}
+.auth-bg::after{content:'';position:absolute;bottom:-30%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(212,160,23,.05) 0%,transparent 70%);animation:pulse 8s ease-in-out infinite reverse}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.15);opacity:1}}
+.auth-container{position:relative;z-index:1;width:420px;max-width:95vw}.auth-brand{text-align:center;margin-bottom:32px}
+.auth-logo{width:80px;height:80px;background:linear-gradient(135deg,var(--accent),var(--accent-d));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;color:#0b0b12;box-shadow:0 0 40px rgba(212,160,23,.25)}
+.auth-brand h1{font-size:24px;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}.auth-brand p{color:var(--fg2);font-size:14px;margin-top:4px}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:32px;box-shadow:var(--shadow)}
+.auth-tabs{display:flex;margin-bottom:24px;border-bottom:1px solid var(--border)}
+.auth-tab{flex:1;padding:12px;text-align:center;font-family:'Oswald',sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:var(--fg2);cursor:pointer;border:none;border-bottom:2px solid transparent;transition:.2s;background:none}
+.auth-tab.active{color:var(--accent);border-bottom-color:var(--accent)}.auth-tab:hover{color:var(--fg)}
+.form-group{margin-bottom:18px}.form-group label{display:block;font-size:13px;color:var(--fg2);margin-bottom:6px;font-weight:500}
+.form-input{width:100%;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);color:var(--fg);font-size:14px;font-family:inherit;transition:.2s;outline:none}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-g)}.form-input::placeholder{color:var(--muted)}
+select.form-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23606088' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+textarea.form-input{resize:vertical;min-height:80px}
+.btn{padding:12px 24px;border:none;border-radius:var(--r);font-family:'Oswald',sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;transition:.2s;font-weight:500;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-d));color:#0b0b12;box-shadow:0 4px 16px rgba(212,160,23,.2)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(212,160,23,.35)}
+.btn-secondary{background:var(--bg2);color:var(--fg);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff}.btn-danger:hover{transform:translateY(-1px)}
+.btn-success{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}.btn-success:hover{transform:translateY(-1px)}
+.btn-sm{padding:8px 14px;font-size:12px}.btn-full{width:100%;justify-content:center}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+#app-page{display:none;min-height:100vh}#app-page.active{display:flex}
+#sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);height:100vh;position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;transition:transform .3s}
+.sidebar-header{padding:20px;border-bottom:1px solid var(--border)}.sidebar-logo{display:flex;align-items:center;gap:12px}
+.sidebar-logo .logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--accent-d));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;color:#0b0b12;flex-shrink:0}
+.sidebar-logo .logo-text h2{font-size:15px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;line-height:1.2}.sidebar-logo .logo-text p{font-size:11px;color:var(--fg2)}
+.sidebar-nav{flex:1;padding:12px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--r);color:var(--fg2);font-size:14px;cursor:pointer;transition:.2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+.nav-item:hover{background:var(--card);color:var(--fg)}.nav-item.active{background:var(--accent-g);color:var(--accent);font-weight:600}
+.nav-item i{width:20px;text-align:center;font-size:15px}.nav-divider{height:1px;background:var(--border);margin:10px 0}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border)}.sidebar-user{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sidebar-user .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent-d),var(--accent));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#0b0b12;flex-shrink:0}
+.sidebar-user .user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user .user-role{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+#main-content{flex:1;margin-left:var(--sidebar-w);min-height:100vh}
+.page-header{padding:24px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:var(--bg)}
+.page-header h2{font-size:22px;text-transform:uppercase;letter-spacing:.04em}.page-header-actions{display:flex;gap:10px;align-items:center}
+.mobile-toggle{display:none;background:none;border:none;color:var(--fg);font-size:22px;cursor:pointer;padding:8px}
+.page-content{padding:28px 32px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:20px;transition:.2s;position:relative;overflow:hidden}
+.stat-card:hover{border-color:var(--border-l);transform:translateY(-2px);box-shadow:var(--shadow)}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.gold::after{background:linear-gradient(90deg,var(--accent),var(--accent-l))}.stat-card.green::after{background:linear-gradient(90deg,#16a34a,#22c55e)}
+.stat-card.red::after{background:linear-gradient(90deg,#dc2626,#ef4444)}.stat-card.blue::after{background:linear-gradient(90deg,#0284c7,#38bdf8)}
+.stat-card .stat-icon{width:40px;height:40px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.stat-card.gold .stat-icon{background:var(--accent-g);color:var(--accent)}.stat-card.green .stat-icon{background:rgba(34,197,94,.12);color:var(--success)}
+.stat-card.red .stat-icon{background:rgba(239,68,68,.12);color:var(--danger)}.stat-card.blue .stat-icon{background:rgba(56,189,248,.12);color:var(--info)}
+.stat-card .stat-value{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;line-height:1}.stat-card .stat-label{font-size:13px;color:var(--fg2);margin-top:4px}
+.data-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:20px}
+.data-card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.data-card-header h3{font-size:16px;text-transform:uppercase;letter-spacing:.03em}.data-card-body{padding:20px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}
+th{padding:12px 16px;text-align:left;font-family:'Oswald',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg2);border-bottom:1px solid var(--border);font-weight:500}
+td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:14px;color:var(--fg2)}tr:hover td{background:var(--card-h)}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;display:inline-block}
+.badge-pending{background:rgba(245,158,11,.12);color:var(--warning)}.badge-approved{background:rgba(34,197,94,.12);color:var(--success)}
+.badge-rejected{background:rgba(239,68,68,.12);color:var(--danger)}.badge-partial{background:rgba(56,189,248,.12);color:var(--info)}
+.badge-verified{background:rgba(34,197,94,.12);color:var(--success)}.badge-disbursed{background:rgba(168,85,247,.12);color:#a855f7}
+.badge-failed{background:rgba(239,68,68,.12);color:var(--danger)}.badge-pending_payment{background:rgba(56,189,248,.12);color:var(--info)}
+.badge-junior{background:rgba(168,85,247,.12);color:#a855f7}.badge-pioneer{background:rgba(212,160,23,.12);color:var(--accent)}
+.team-section{margin-bottom:36px}.team-section-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.team-section-header .team-badge{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.team-section-header .team-badge.junior{background:rgba(168,85,247,.12);color:#a855f7}.team-section-header .team-badge.pioneer{background:var(--accent-g);color:var(--accent)}
+.team-section-header h3{font-size:20px;text-transform:uppercase}.team-section-header p{font-size:13px;color:var(--fg2)}
+.player-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.player-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;transition:.2s;cursor:pointer}
+.player-card:hover{border-color:var(--border-l);transform:translateY(-2px);box-shadow:var(--shadow)}
+.player-card .player-photo{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--fg2)}
+.player-card .player-photo img{width:100%;height:100%;object-fit:cover}.player-card .player-name{font-family:'Oswald',sans-serif;font-size:15px;font-weight:500}
+.player-card .player-detail{font-size:12px;color:var(--fg2);margin-top:2px}.player-card .player-pos{display:inline-block;margin-top:6px;padding:3px 10px;background:var(--bg2);border-radius:20px;font-size:11px;color:var(--accent)}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.gallery-item{border-radius:var(--r);overflow:hidden;position:relative;cursor:pointer;aspect-ratio:4/3;border:1px solid var(--border);transition:.2s}
+.gallery-item:hover{border-color:var(--accent);transform:scale(1.02)}.gallery-item img{width:100%;height:100%;object-fit:cover}
+.gallery-item .gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 50%);opacity:0;transition:.2s;display:flex;align-items:flex-end;padding:14px}
+.gallery-item:hover .gallery-overlay{opacity:1}.gallery-overlay p{font-size:13px;color:#fff}
+.gallery-overlay .comment-count{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.6);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:8000;display:none;flex-direction:column}.lightbox.active{display:flex}
+.lightbox-top{padding:16px 24px;display:flex;align-items:center;justify-content:space-between}.lightbox-top h3{color:#fff;font-size:16px}
+.lightbox-close{background:none;border:none;color:#fff;font-size:28px;cursor:pointer}
+.lightbox-middle{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden}
+.lightbox-middle img{max-width:90%;max-height:70vh;object-fit:contain;border-radius:var(--r)}
+.lightbox-bottom{background:var(--card);border-top:1px solid var(--border);max-height:200px;overflow-y:auto;padding:16px 24px}
+.comment-item{display:flex;gap:10px;margin-bottom:12px}.comment-item .c-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-d);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0b0b12;flex-shrink:0}
+.comment-item .c-name{font-size:12px;font-weight:600;color:var(--accent)}.comment-item .c-text{font-size:13px;color:var(--fg2);margin-top:2px}
+.comment-input-row{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center}
+.cat-card .cat-icon{font-size:28px;margin-bottom:8px}.cat-card .cat-name{font-family:'Oswald',sans-serif;font-size:14px;text-transform:uppercase;margin-bottom:4px}
+.cat-card .cat-value{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:var(--accent)}.cat-card .cat-count{font-size:12px;color:var(--fg2)}
+.approval-bar{display:flex;gap:4px;margin-top:6px}.approval-step{flex:1;height:6px;border-radius:3px;background:var(--border);transition:.3s}.approval-step.filled{background:var(--success)}
+.payment-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:16px;flex-wrap:wrap}
+.payment-card .pay-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.payment-card .pay-icon.mpesa{background:rgba(34,197,94,.12);color:var(--success)}.payment-card .pay-icon.bank{background:rgba(56,189,248,.12);color:var(--info)}
+.payment-card .pay-icon.other{background:rgba(168,85,247,.12);color:#a855f7}
+.payment-card .pay-name{font-family:'Oswald',sans-serif;font-size:16px;text-transform:uppercase}
+.payment-card .pay-detail{font-size:14px;color:var(--fg2);margin-top:2px}.payment-card .pay-instructions{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+.empty-state{text-align:center;padding:48px 20px;color:var(--fg2)}.empty-state i{font-size:48px;margin-bottom:16px;opacity:.3}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.view-section{animation:fadeIn .3s ease}
+@keyframes spin{to{transform:rotate(360deg)}}.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:20px auto}
+.payment-wait{text-align:center;padding:30px}.payment-wait i{font-size:48px;color:var(--accent);margin-bottom:16px;display:block}
+.payment-wait h4{margin-bottom:8px}.payment-wait p{color:var(--fg2);font-size:14px;line-height:1.6}
+@media(max-width:768px){#sidebar{transform:translateX(-100%)}#sidebar.open{transform:translateX(0)}.mobile-toggle{display:block!important}.page-content{padding:20px 16px}.page-header{padding:16px}.stat-grid{grid-template-columns:repeat(2,1fr)}.player-grid{grid-template-columns:repeat(2,1fr)}.gallery-grid{grid-template-columns:repeat(2,1fr)}.category-grid{grid-template-columns:repeat(2,1fr)}.sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;display:none}.sidebar-backdrop.active{display:block}}
+@media(max-width:480px){.stat-grid{grid-template-columns:1fr}.player-grid{grid-template-columns:1fr 1fr}.gallery-grid{grid-template-columns:1fr 1fr}}
+.hidden{display:none!important}.text-accent{color:var(--accent)}.text-success{color:var(--success)}.text-danger{color:var(--danger)}.text-muted{color:var(--fg2)}.mt-4{margin-top:16px}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-header"><h3 id="modal-title"></h3><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modal-body"></div></div></div>
+<div class="lightbox" id="lightbox"><div class="lightbox-top"><h3 id="lightbox-caption"></h3><button class="lightbox-close" onclick="closeLightbox()">&times;</button></div><div class="lightbox-middle"><img id="lightbox-img" src="" alt=""></div><div class="lightbox-bottom" id="lightbox-comments"></div></div>
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+<div id="auth-page">
+<div class="auth-bg"></div>
+<div class="auth-container">
+<div class="auth-brand"><div class="auth-logo"><i class="fas fa-futbol"></i></div><h1>Lions Soccer Academy</h1><p>Rongai, Kenya</p></div>
+<div class="auth-card">
+<div class="auth-tabs"><button class="auth-tab active" onclick="switchAuthTab('login')">Login</button><button class="auth-tab" onclick="switchAuthTab('register')">Register</button></div>
+<form id="login-form" onsubmit="handleLogin(event)">
+<div class="form-group"><label>Email or Phone</label><input type="text" class="form-input" id="login-id" placeholder="admin@lionsacademy.ke" required></div>
+<div class="form-group"><label>Password</label><input type="password" class="form-input" id="login-pw" placeholder="Enter password" required></div>
+<button type="submit" class="btn btn-primary btn-full">Sign In</button>
+<p style="color:var(--fg2);font-size:12px;text-align:center;margin-top:14px">Admin: <strong style="color:var(--accent)">admin@lionsacademy.ke</strong> / <strong style="color:var(--accent)">admin123</strong></p>
+</form>
+<form id="register-form" class="hidden" onsubmit="handleRegister(event)">
+<div class="form-group"><label>Full Name</label><input type="text" class="form-input" id="reg-name" required></div>
+<div class="form-group"><label>Email (optional)</label><input type="email" class="form-input" id="reg-email" placeholder="your@email.com"></div>
+<div class="form-group"><label>Phone Number</label><input type="tel" class="form-input" id="reg-phone" placeholder="0712345678" required></div>
+<div class="form-group"><label>Password</label><input type="password" class="form-input" id="reg-pw" required minlength="6"></div>
+<div class="form-group"><label>Confirm Password</label><input type="password" class="form-input" id="reg-cpw" required></div>
+<button type="submit" class="btn btn-primary btn-full">Create Account</button>
+</form>
+</div></div></div>
+
+<div id="app-page">
+<aside id="sidebar"><div class="sidebar-header"><div class="sidebar-logo"><div class="logo-icon"><i class="fas fa-futbol"></i></div><div class="logo-text"><h2>Lions Academy</h2><p>Rongai, Kenya</p></div></div></div>
+<nav class="sidebar-nav" id="sidebar-nav"></nav>
+<div class="sidebar-footer"><div class="sidebar-user"><div class="avatar" id="sidebar-avatar"></div><div class="user-info"><div class="user-name" id="sidebar-name"></div><div class="user-role" id="sidebar-role"></div></div></div>
+<button class="btn btn-secondary btn-sm btn-full" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div></aside>
+<main id="main-content"><div class="page-header"><button class="mobile-toggle" onclick="toggleSidebar()" id="mobile-toggle" style="display:none"><i class="fas fa-bars"></i></button><h2 id="page-title">Dashboard</h2><div class="page-header-actions" id="page-actions"></div></div><div class="page-content" id="page-content"></div></main>
+</div>
+
+<script>
+var currentUser = null;
+var currentView = 'dashboard';
+var allGallery = [];
+var paymentPollInterval = null;
+
+function getToken() { return sessionStorage.getItem('lions_token'); }
+function setToken(t) { sessionStorage.setItem('lions_token', t); }
+
+function api(method, path, body) {
+    var opts = { method: method, headers: { 'Content-Type': 'application/json' } };
+    if (getToken()) opts.headers.Authorization = 'Bearer ' + getToken();
+    if (body) opts.body = JSON.stringify(body);
+    return fetch('/api' + path, opts).then(function(res) {
+        if (res.status === 401) { handleLogout(); throw new Error('Session expired'); }
+        return res.json().then(function(data) {
+            if (!res.ok) throw new Error(data.message || 'Request failed');
+            return data;
+        });
+    });
+}
+
+function showToast(msg, type) {
+    type = type || 'success';
+    var c = document.getElementById('toast-container');
+    var t = document.createElement('div');
+    t.className = 'toast ' + type;
+    var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
+    t.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i><span>' + msg + '</span>';
+    c.appendChild(t);
+    setTimeout(function() { t.style.animation = 'slideOutR .3s ease forwards'; setTimeout(function() { t.remove(); }, 300); }, 3500);
+}
+
+function openModal(title, html) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').innerHTML = html;
+    document.getElementById('modal-overlay').classList.add('active');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); if (paymentPollInterval) { clearInterval(paymentPollInterval); paymentPollInterval = null; } }
+document.getElementById('modal-overlay').addEventListener('click', function(e) { if (e.target === e.currentTarget) closeModal(); });
+
+var currentGalleryId = null;
+function openLightbox(gid) {
+    var g = allGallery.find(function(x) { return x._id === gid; });
+    if (!g) return;
+    currentGalleryId = gid;
+    document.getElementById('lightbox-img').src = g.url;
+    document.getElementById('lightbox-caption').textContent = g.caption;
+    renderLBComments(g);
+    document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); currentGalleryId = null; }
+function renderLBComments(g) {
+    var el = document.getElementById('lightbox-comments');
+    var html = (g.comments || []).map(function(c) {
+        return '<div class="comment-item"><div class="c-avatar">' + c.userName.charAt(0) + '</div><div><div class="c-name">' + c.userName + '</div><div class="c-text">' + c.text + '</div></div></div>';
+    }).join('');
+    html += '<div class="comment-input-row"><input type="text" class="form-input" id="comment-input" placeholder="Write a comment..." style="flex:1"><button class="btn btn-primary btn-sm" onclick="postComment()">Post</button></div>';
+    el.innerHTML = html;
+}
+function postComment() {
+    if (!currentGalleryId) return;
+    var input = document.getElementById('comment-input');
+    var text = input.value.trim();
+    if (!text) return;
+    api('POST', '/gallery/' + currentGalleryId + '/comment', { text: text }).then(function(g) {
+        var idx = allGallery.findIndex(function(x) { return x._id === currentGalleryId; });
+        if (idx >= 0) allGallery[idx] = g;
+        renderLBComments(g);
+        input.value = '';
+        showToast('Comment posted');
+    }).catch(function(e) { showToast(e.message, 'error'); });
+}
+document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target.id === 'lightbox') closeLightbox(); });
+
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(function(t, i) { t.classList.toggle('active', (tab === 'login' ? i === 0 : i === 1)); });
+    document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    var id = document.getElementById('login-id').value.trim();
+    var pw = document.getElementById('login-pw').value;
+    api('POST', '/auth/login', { identifier: id, password: pw }).then(function(data) {
+        currentUser = data.user;
+        setToken(data.token);
+        enterApp();
+    }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    var pw = document.getElementById('reg-pw').value;
+    var cpw = document.getElementById('reg-cpw').value;
+    if (pw !== cpw) { showToast('Passwords do not match', 'error'); return; }
+    api('POST', '/auth/register', {
+        name: document.getElementById('reg-name').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        phone: document.getElementById('reg-phone').value.trim(),
+        password: pw
+    }).then(function(data) {
+        currentUser = data.user;
+        setToken(data.token);
+        enterApp();
+        showToast('Welcome to Lions Academy!');
+    }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function handleLogout() {
+    currentUser = null;
+    sessionStorage.removeItem('lions_token');
+    document.getElementById('app-page').classList.remove('active');
+    document.getElementById('auth-page').style.display = '';
+    document.getElementById('login-form').reset();
+}
+
+function enterApp() {
+    document.getElementById('auth-page').style.display = 'none';
+    document.getElementById('app-page').classList.add('active');
+    document.getElementById('mobile-toggle').style.display = '';
+    setupSidebar();
+    navigateTo('dashboard');
+}
+
+function tryRestoreSession() {
+    if (!getToken()) { document.getElementById('auth-page').style.display = ''; return; }
+    api('GET', '/auth/me').then(function(data) {
+        currentUser = data.user;
+        enterApp();
+    }).catch(function() {
+        sessionStorage.removeItem('lions_token');
+        document.getElementById('auth-page').style.display = '';
+    });
+}
+
+function setupSidebar() {
+    if (!currentUser) return;
+    var isAdmin = currentUser.role === 'admin';
+    var initials = currentUser.name.split(' ').map(function(n) { return n[0]; }).join('').toUpperCase();
+    document.getElementById('sidebar-avatar').textContent = initials;
+    document.getElementById('sidebar-name').textContent = currentUser.name;
+    document.getElementById('sidebar-role').textContent = isAdmin ? 'Administrator' : 'Member';
+    var items = [
+        { id: 'dashboard', icon: 'fa-th-large', label: 'Dashboard' },
+        { id: 'teams', icon: 'fa-users', label: 'Teams & Players' },
+        { id: 'gallery', icon: 'fa-images', label: 'Gallery' },
+        { divider: true }
+    ];
+    if (isAdmin) {
+        items.push({ id: 'finance', icon: 'fa-wallet', label: 'Finance' }, { id: 'loans', icon: 'fa-hand-holding-usd', label: 'Loans' }, { id: 'payments', icon: 'fa-credit-card', label: 'Payment Methods' }, { id: 'members', icon: 'fa-user-friends', label: 'Members' }, { divider: true }, { id: 'settings', icon: 'fa-cog', label: 'Settings' });
+    } else {
+        items.push({ id: 'finance', icon: 'fa-wallet', label: 'My Contributions' }, { id: 'loans', icon: 'fa-hand-holding-usd', label: 'My Loans' }, { id: 'payments', icon: 'fa-credit-card', label: 'Payment Info' });
+    }
+    var nav = document.getElementById('sidebar-nav');
+    var html = '';
+    items.forEach(function(item) {
+        if (item.divider) { html += '<div class="nav-divider"></div>'; return; }
+        html += '<button class="nav-item' + (currentView === item.id ? ' active' : '') + '" data-view="' + item.id + '"><i class="fas ' + item.icon + '"></i><span>' + item.label + '</span></button>';
+    });
+    nav.innerHTML = html;
+    nav.querySelectorAll('.nav-item').forEach(function(btn) { btn.addEventListener('click', function() { navigateTo(btn.dataset.view); }); });
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-backdrop').classList.toggle('active');
+}
+
+function navigateTo(view) {
+    currentView = view;
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.toggle('active', n.dataset.view === view); });
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-backdrop').classList.remove('active');
+    var isAdmin = currentUser && currentUser.role === 'admin';
+    var titles = { dashboard: 'Dashboard', teams: 'Teams & Players', gallery: 'Gallery', finance: isAdmin ? 'Finance & Contributions' : 'My Contributions', loans: isAdmin ? 'Loan Management' : 'My Loans', payments: isAdmin ? 'Payment Methods' : 'Payment Info', members: 'Members', settings: 'Settings' };
+    document.getElementById('page-title').textContent = titles[view] || 'Dashboard';
+    document.getElementById('page-actions').innerHTML = '';
+    var r = { dashboard: renderDashboard, teams: renderTeams, gallery: renderGallery, finance: renderFinance, loans: renderLoans, payments: renderPayments, members: renderMembers, settings: renderSettings };
+    if (r[view]) r[view]();
+}
+
+function loadHTML() { return '<div class="spinner"></div>'; }
+function errHTML(msg) { return '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>' + msg + '</p><button class="btn btn-secondary btn-sm mt-4" onclick="navigateTo(\'' + currentView + '\')">Retry</button></div>'; }
+
+function renderDashboard() {
+    var el = document.getElementById('page-content');
+    var isAdmin = currentUser.role === 'admin';
+    if (isAdmin) document.getElementById('page-actions').innerHTML = '<button class="btn btn-primary btn-sm" onclick="openAddPlayerModal()"><i class="fas fa-plus"></i> Add Player</button>';
+    el.innerHTML = loadHTML();
+    api('GET', '/dashboard').then(function(d) {
+        if (isAdmin) {
+            el.innerHTML = '<div class="view-section"><div class="stat-grid">' +
+                '<div class="stat-card gold"><div class="stat-icon"><i class="fas fa-wallet"></i></div><div class="stat-value">KES ' + d.total.toLocaleString() + '</div><div class="stat-label">Total Pool Balance</div></div>' +
+                '<div class="stat-card green"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value">' + d.members + '</div><div class="stat-label">Members</div></div>' +
+                '<div class="stat-card blue"><div class="stat-icon"><i class="fas fa-futbol"></i></div><div class="stat-value">' + d.players + '</div><div class="stat-label">Players</div></div>' +
+                '<div class="stat-card red"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value">' + d.pending + '</div><div class="stat-label">Pending Verifications</div></div>' +
+                '<div class="stat-card red"><div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div><div class="stat-value">' + d.pendingLoans + '</div><div class="stat-label">Pending Loans</div></div></div>';
+        } else {
+            el.innerHTML = '<div class="view-section"><div class="stat-grid">' +
+                '<div class="stat-card gold"><div class="stat-icon"><i class="fas fa-wallet"></i></div><div class="stat-value">KES ' + d.myTotal.toLocaleString() + '</div><div class="stat-label">My Contributions</div></div>' +
+                '<div class="stat-card green"><div class="stat-icon"><i class="fas fa-receipt"></i></div><div class="stat-value">' + d.contribCount + '</div><div class="stat-label">Total Contributions</div></div>' +
+                '<div class="stat-card blue"><div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div><div class="stat-value">' + d.activeLoans + '</div><div class="stat-label">Active Loans</div></div></div></div>';
+        }
+    }).catch(function() { el.innerHTML = errHTML('Failed to load dashboard'); });
+}
+
+function renderTeams() {
+    var el = document.getElementById('page-content');
+    if (currentUser.role === 'admin') document.getElementById('page-actions').innerHTML = '<button class="btn btn-primary btn-sm" onclick="openAddPlayerModal()"><i class="fas fa-plus"></i> Add Player</button>';
+    el.innerHTML = loadHTML();
+    api('GET', '/players').then(function(players) {
+        var jr = players.filter(function(p) { return p.team === 'junior'; });
+        var pn = players.filter(function(p) { return p.team === 'pioneer'; });
+        function pc(p) { return '<div class="player-card" onclick="openEditPlayerModal(\'' + p._id + '\')"><div class="player-photo">' + (p.photo ? '<img src="' + p.photo + '">' : '<i class="fas fa-user"></i>') + '</div><div class="player-name">' + p.name + '</div><div class="player-detail">' + p.category + '</div><span class="player-pos">' + p.position + '</span></div>'; }
+        el.innerHTML = '<div class="view-section"><div class="team-section"><div class="team-section-header"><div class="team-badge junior"><i class="fas fa-star"></i></div><div><h3>Junior Team</h3><p>Under 11 and below</p></div><span class="badge badge-junior">' + jr.length + ' players</span></div><div class="player-grid">' + jr.map(pc).join('') + '</div></div><div class="team-section"><div class="team-section-header"><div class="team-badge pioneer"><i class="fas fa-shield-alt"></i></div><div><h3>Pioneer Team</h3><p>Under 12 and above</p></div><span class="badge badge-pioneer">' + pn.length + ' players</span></div><div class="player-grid">' + pn.map(pc).join('') + '</div></div></div>';
+    }).catch(function() { el.innerHTML = errHTML('Failed to load players'); });
+}
+
+function openAddPlayerModal() {
+    openModal('Add Player', '<form onsubmit="savePlayer(event,\'\')"><div class="form-group"><label>Name</label><input class="form-input" id="p-name" required></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label>Age Group</label><select class="form-input" id="p-cat" required onchange="autoTeam()"><option value="">Select...</option><optgroup label="Junior"><option>U6</option><option>U7</option><option>U8</option><option>U9</option><option>U10</option><option>U11</option></optgroup><optgroup label="Pioneer"><option>U12</option><option>U13</option><option>U14</option><option>U15</option><option>U16</option><option>U17</option><option>U18</option><option>Senior</option></optgroup></select></div><div class="form-group"><label>Position</label><select class="form-input" id="p-pos" required><option value="">Select...</option><option>Goalkeeper</option><option>Defender</option><option>Midfielder</option><option>Forward</option></select></div></div><div class="form-group"><label>Photo URL (optional)</label><input class="form-input" id="p-photo" placeholder="https://..."></div><input type="hidden" id="p-team"><button type="submit" class="btn btn-primary btn-full">Save Player</button></form>');
+}
+function autoTeam() { var c = document.getElementById('p-cat').value; document.getElementById('p-team').value = ['U6','U7','U8','U9','U10','U11'].indexOf(c) >= 0 ? 'junior' : 'pioneer'; }
+
+function openEditPlayerModal(pid) {
+    api('GET', '/players').then(function(players) {
+        var pl = players.find(function(x) { return x._id === pid; });
+        if (!pl) return;
+        function sel(v) { return '<option value="' + v + '"' + (pl.category === v ? ' selected' : '') + '>' + v + '</option>'; }
+        function psel(v) { return '<option' + (pl.position === v ? ' selected' : '') + '>' + v + '</option>'; }
+        openModal('Edit Player', '<form onsubmit="savePlayer(event,\'' + pid + '\')"><div class="form-group"><label>Name</label><input class="form-input" id="p-name" value="' + pl.name + '" required></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label>Age Group</label><select class="form-input" id="p-cat" required onchange="autoTeam()"><optgroup label="Junior">' + sel('U6') + sel('U7') + sel('U8') + sel('U9') + sel('U10') + sel('U11') + '</optgroup><optgroup label="Pioneer">' + sel('U12') + sel('U13') + sel('U14') + sel('U15') + sel('U16') + sel('U17') + sel('U18') + sel('Senior') + '</optgroup></select></div><div class="form-group"><label>Position</label><select class="form-input" id="p-pos" required>' + psel('Goalkeeper') + psel('Defender') + psel('Midfielder') + psel('Forward') + '</select></div></div><div class="form-group"><label>Photo URL</label><input class="form-input" id="p-photo" value="' + (pl.photo || '') + '"></div><input type="hidden" id="p-team" value="' + pl.team + '"><div style="display:flex;gap:10px"><button type="submit" class="btn btn-primary" style="flex:1">Update</button><button type="button" class="btn btn-danger" onclick="deletePlayer(\'' + pid + '\')">Delete</button></div></form>');
+    }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function savePlayer(e, editId) {
+    e.preventDefault();
+    var ageMap = { U6:5, U7:6, U8:7, U9:8, U10:9, U11:10, U12:12, U13:13, U14:14, U15:15, U16:16, U17:17, U18:18, Senior:20 };
+    var body = { name: document.getElementById('p-name').value.trim(), category: document.getElementById('p-cat').value, position: document.getElementById('p-pos').value, team: document.getElementById('p-team').value, photo: document.getElementById('p-photo').value.trim(), age: ageMap[document.getElementById('p-cat').value] || 10 };
+    var p = editId ? api('PUT', '/players/' + editId, body) : api('POST', '/players', body);
+    p.then(function() { closeModal(); renderTeams(); showToast(editId ? 'Player updated' : 'Player added'); }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function deletePlayer(pid) {
+    api('DELETE', '/players/' + pid).then(function() { closeModal(); renderTeams(); showToast('Player removed', 'info'); }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function renderGallery() {
+    var el = document.getElementById('page-content');
+    if (currentUser.role === 'admin') document.getElementById('page-actions').innerHTML = '<button class="btn btn-primary btn-sm" onclick="openAddGalleryModal()"><i class="fas fa-camera"></i> Add Photo</button>';
+    el.innerHTML = loadHTML();
+    api('GET', '/gallery').then(function(data) {
+        allGallery = data;
+        if (!data.length) { el.innerHTML = '<div class="empty-state"><i class="fas fa-images"></i><p>No photos yet</p></div>'; return; }
+        el.innerHTML = '<div class="view-section"><div class="gallery-grid">' + data.map(function(g) {
+            return '<div class="gallery-item" onclick="openLightbox(\'' + g._id + '\')"><img src="' + g.url + '" alt="' + g.caption + '" loading="lazy"><div class="gallery-overlay"><p>' + g.caption + '</p>' + (g.comments && g.comments.length ? '<span class="comment-count"><i class="fas fa-comment"></i> ' + g.comments.length + '</span>' : '') + '</div></div>';
+        }).join('') + '</div></div>';
+    }).catch(function() { el.innerHTML = errHTML('Failed to load gallery'); });
+}
+
+function openAddGalleryModal() {
+    openModal('Add Photo', '<form onsubmit="saveGallery(event)"><div class="form-group"><label>Image URL</label><input class="form-input" id="g-url" required placeholder="https://..."></div><div class="form-group"><label>Caption</label><input class="form-input" id="g-cap" required></div><button type="submit" class="btn btn-primary btn-full">Upload</button></form>');
+}
+function saveGallery(e) {
+    e.preventDefault();
+    api('POST', '/gallery', { url: document.getElementById('g-url').value.trim(), caption: document.getElementById('g-cap').value.trim() }).then(function() { closeModal(); renderGallery(); showToast('Photo added'); }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function renderFinance() {
+    var el = document.getElementById('page-content');
+    var isAdmin = currentUser.role === 'admin';
+    if (!isAdmin) document.getElementById('page-actions').innerHTML = '<button class="btn btn-primary btn-sm" onclick="openNewContribModal()"><i class="fas fa-plus"></i> New Contribution</button>';
+    el.innerHTML = loadHTML();
+    api('GET', '/contributions').then(function(d) {
+        if (isAdmin) {
+            var cats = { medical: { icon: 'fa-hospital', label: 'Medical', color: '#ef4444' }, camps: { icon: 'fa-campground', label: 'Camps', color: '#f59e0b' }, trips: { icon: 'fa-plane', label: 'Trips', color: '#38bdf8' }, emergency: { icon: 'fa-exclamation-triangle', label: 'Emergency', color: '#ef4444' }, general: { icon: 'fa-coins', label: 'General', color: '#22c55e' } };
+            var catHTML = '';
+            Object.keys(cats).forEach(function(k) { var c = cats[k]; catHTML += '<div class="cat-card"><div class="cat-icon" style="color:' + c.color + '"><i class="fas ' + c.icon + '"></i></div><div class="cat-name">' + c.label + '</div><div class="cat-value">KES ' + (d.categories[k] || 0).toLocaleString() + '</div></div>'; });
+            document.getElementById('page-actions').innerHTML = '<button class="btn btn-primary btn-sm" onclick="showToast(\'Use Verify buttons below\',\'info\')"><i class="fas fa-check"></i> Pending (' + d.pendingCount + ')</button>';
+            var trows = d.all.map(function(c) {
+                var act = c.status === 'pending' ? '<button class="btn btn-success btn-sm" onclick="verifyC(\'' + c._id + '\')">Verify</button> <button class="btn btn-danger btn-sm" onclick="deleteC(\'' + c._id + '\')">Remove</button>' : '<span class="text-muted">-</span>';
+                var receipt = c.mpesaReceipt ? '<br><span style="font-size:11px;color:var(--success)">' + c.mpesaReceipt + '</span>' : '';
+                return '<tr><td>' + new Date(c.date).toLocaleDateString() + '</td><td>' + c.memberName + '</td><td>KES ' + c.amount.toLocaleString() + '</td><td style="text-transform:capitalize">' + c.category + '</td><td><span class="badge badge-' + c.status + '">' + c.status + '</span>' + receipt + '</td><td>' + act + '</td></tr>';
+            }).join('');
+            el.innerHTML = '<div class="view-section"><div class="stat-grid"><div class="stat-card gold"><div class="stat-icon"><i class="fas fa-vault"></i></div><div class="stat-value">KES ' + d.total.toLocaleString() + '</div><div class="stat-label">Total Verified Pool</div></div><div class="stat-card green"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value">' + d.all.filter(function(c) { return c.status === 'verified'; }).length + '</div><div class="stat-label">Verified</div></div><div class="stat-card red"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value">' + d.pendingCount + '</div><div class="stat-label">Pending</div></div></div><div class="category-grid">' + catHTML + '</div><div class="data-card"><div class="data-card-header"><h3>All Contributions</h3></div><div class="data-card-body"><div class="table-wrap"><table><tr><th>Date</th><th>Member</th><th>Amount</th><th>Category</th><th>Status</th><th>Actions</th></tr>' + trows + '</table></div></div></div></div>';
+        } else {
+            var trows = d.mine.map(function(c) {
+                var receipt = c.mpesaReceipt ? '<br><span style="font-size:11px;color:var(--success)">Receipt: ' + c.mpesaReceipt + '</span>' : '';
+                return '<tr><td>' + new Date(c.date).toLocaleDateString() + '</td><td>KES ' + c.amount.toLocaleString() + '</td><td style="text-transform:capitalize">' + c.category + '</td><td><span class="badge badge-' + c.status + '">' + c.status + '</span>' + receipt + '</td></tr>';
+            }).join('');
+            el.innerHTML = '<div class="view-section"><div class="stat-grid"><div class="stat-card gold"><div class="stat-icon"><i class="fas fa-wallet"></i></div><div class="stat-value">KES ' + d.myTotal.toLocaleString() + '</div><div class="stat-label">My Verified Total</div></div></div><div class="data-card" style="border-color:var(--accent-d);background:var(--accent-g)"><div class="data-card-body" style="text-align:center;padding:16px"><i class="fas fa-lock" style="font-size:24px;color:var(--accent);margin-bottom:8px"></i><p style="font-size:14px">For total pool balance, contact the administrator.</p></div></div><div class="data-card"><div class="data-card-header"><h3>My History</h3></div><div class="data-card-body"><div class="table-wrap"><table><tr><th>Date</th><th>Amount</th><th>Category</th><th>Status</th></tr>' + (trows || '<tr><td colspan="4" style="text-align:center;color:var(--fg2)">No contributions yet</td></tr>') + '</table></div></div></div></div>';
+        }
+    }).catch(function() { el.innerHTML = errHTML('Failed to load contributions'); });
+}
+
+function openNewContribModal() {
+    openModal('New Contribution', '<form onsubmit="submitContrib(event)"><div class="form-group"><label>Amount (KES)</label><input type="number" class="form-input" id="c-amt" required min="100" placeholder="e.g. 5000"></div><div class="form-group"><label>Category</label><select class="form-input" id="c-cat" required><option value="medical">Medical</option><option value="camps">Camps</option><option value="trips">Trips</option><option value="emergency">Emergency</option><option value="general">General</option></select></div><p style="font-size:12px;color:var(--fg2);margin-bottom:16px"><i class="fas fa-info-circle"></i> An M-Pesa prompt will be sent to your registered phone. Enter your PIN to confirm payment.</p><button type="submit" class="btn btn-primary btn-full" id="contrib-btn"><i class="fas fa-mobile-alt"></i> Pay via M-Pesa</button></form>');
+}
+
+function submitContrib(e) {
+    e.preventDefault();
+    var btn = document.getElementById('contrib-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    api('POST', '/contributions', { amount: parseInt(document.getElementById('c-amt').value), category: document.getElementById('c-cat').value }).then(function(data) {
+        closeModal();
+        if (data.stkSent) { showPaymentWait(data.contribution._id, data.contribution.amount); }
+        else { showToast('Contribution submitted. Admin will verify manually.', 'info'); renderFinance(); }
+    }).catch(function(e) { showToast(e.message, 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-mobile-alt"></i> Pay via M-Pesa'; });
+}
+
+function showPaymentWait(cid, amount) {
+    openModal('Processing Payment', '<div class="payment-wait"><i class="fas fa-mobile-alt"></i><h4>Check Your Phone</h4><p>An M-Pesa prompt has been sent for <strong>KES ' + amount.toLocaleString() + '</strong></p><p>Enter your M-Pesa PIN to confirm the payment.</p><div class="spinner"></div><p id="pay-status" style="margin-top:12px">Waiting for confirmation...</p></div>');
+    var polls = 0;
+    if (paymentPollInterval) clearInterval(paymentPollInterval);
+    paymentPollInterval = setInterval(function() {
+        polls++;
+        api('GET', '/contributions/' + cid).then(function(d) {
+            if (d.contribution.status === 'verified') {
+                clearInterval(paymentPollInterval); paymentPollInterval = null;
+                closeModal(); showToast('Payment received! Contribution verified.', 'success'); renderFinance();
+            } else if (d.contribution.status === 'failed') {
+                clearInterval(paymentPollInterval); paymentPollInterval = null;
+                closeModal(); showToast('Payment failed: ' + d.contribution.rejectReason, 'error'); renderFinance();
+            }
+        }).catch(function() {});
+        if (polls > 36) {
+            clearInterval(paymentPollInterval); paymentPollInterval = null;
+            closeModal(); showToast('Timed out. Check your M-Pesa. Contribution will verify manually.', 'warning'); renderFinance();
+        }
+    }, 5000);
+}
+
+function verifyC(cid) { api('PUT', '/contributions/' + cid + '/verify').then(function() { showToast('Verified'); renderFinance(); }).catch(function(e) { showToast(e.message, 'error'); }); }
+function deleteC(cid) { api('DELETE', '/contributions/' + cid).then(function() { showToast('Removed', 'info'); renderFinance(); }).catch(function(e) { showToast(e.message, 'error'); }); }
+
+function renderLoans() {
+    var el = document.getElementById('page-content');
+    var isAdmin = currentUser.role === 'admin';
+    if (!isAdmin) document.getElementById('page-actions').innerHTML = '<button class="btn btn-primary btn-sm" onclick="openNewLoanModal()"><i class="fas fa-plus"></i> Request Loan</button>';
+    el.innerHTML = loadHTML();
+    api('GET', '/loans').then(function(loans) {
+        if (isAdmin) {
+            var trows = loans.map(function(l) {
+                var canApprove = (l.status === 'pending' || l.status === 'partial') && l.approvals.indexOf(currentUser._id) < 0;
+                var act = canApprove ? '<button class="btn btn-success btn-sm" onclick="approveLoan(\'' + l._id + '\')">Approve</button> <button class="btn btn-danger btn-sm" onclick="openRejectLoanModal(\'' + l._id + '\')">Reject</button>' : l.status === 'approved' ? '<button class="btn btn-primary btn-sm" onclick="disburseLoan(\'' + l._id + '\')">Disburse</button>' : '<span class="text-muted">-</span>';
+                return '<tr><td>' + new Date(l.date).toLocaleDateString() + '</td><td>' + l.memberName + '</td><td>KES ' + l.amount.toLocaleString() + '</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + l.reason + '</td><td><div class="approval-bar"><div class="approval-step' + (l.approvals.length >= 1 ? ' filled' : '') + '"></div><div class="approval-step' + (l.approvals.length >= 2 ? ' filled' : '') + '"></div></div><span style="font-size:11px;color:var(--fg2)">' + l.approvals.length + '/2</span></td><td><span class="badge badge-' + l.status + '">' + l.status + '</span></td><td>' + act + '</td></tr>';
+            }).join('');
+            el.innerHTML = '<div class="view-section"><div class="data-card"><div class="data-card-header"><h3>All Loan Requests</h3></div><div class="data-card-body"><div class="table-wrap"><table><tr><th>Date</th><th>Member</th><th>Amount</th><th>Reason</th><th>Approvals</th><th>Status</th><th>Actions</th></tr>' + (trows || '<tr><td colspan="7" style="text-align:center;color:var(--fg2)">No loans</td></tr>') + '</table></div></div></div></div>';
+        } else {
+            var trows = loans.map(function(l) {
+                return '<tr><td>' + new Date(l.date).toLocaleDateString() + '</td><td>KES ' + l.amount.toLocaleString() + '</td><td>' + l.reason + '</td><td><div class="approval-bar"><div class="approval-step' + (l.approvals.length >= 1 ? ' filled' : '') + '"></div><div class="approval-step' + (l.approvals.length >= 2 ? ' filled' : '') + '"></div></div><span style="font-size:11px;color:var(--fg2)">' + l.approvals.length + '/2 approvals</span></td><td><span class="badge badge-' + l.status + '">' + l.status + '</span>' + (l.rejectReason ? '<br><span style="font-size:11px;color:var(--danger)">' + l.rejectReason + '</span>' : '') + '</td></tr>';
+            }).join('');
+            el.innerHTML = '<div class="view-section"><div class="data-card"><div class="data-card-header"><h3>My Loans</h3></div><div class="data-card-body"><div class="table-wrap"><table><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Progress</th><th>Status</th></tr>' + (trows || '<tr><td colspan="5" style="text-align:center;color:var(--fg2)">No loans yet</td></tr>') + '</table></div></div></div><div class="data-card" style="margin-top:16px"><div class="data-card-body" style="padding:14px"><p style="font-size:13px;color:var(--fg2)"><i class="fas fa-info-circle" style="color:var(--info)"></i> Both admins must approve. You will receive an SMS notification.</p></div></div></div>';
+        }
+    }).catch(function() { el.innerHTML = errHTML('Failed to load loans'); });
+}
+
+function openNewLoanModal() {
+    openModal('Request Loan', '<form onsubmit="submitLoan(event)"><div class="form-group"><label>Amount (KES)</label><input type="number" class="form-input" id="l-amt" required min="500"></div><div class="form-group"><label>Reason</label><textarea class="form-input" id="l-reason" required></textarea></div><button type="submit" class="btn btn-primary btn-full">Submit Request</button></form>');
+}
+function submitLoan(e) {
+    e.preventDefault();
+    api('POST', '/loans', { amount: parseInt(document.getElementById('l-amt').value), reason: document.getElementById('l-reason').value.trim() }).then(function() { closeModal(); renderLoans(); showToast('Loan request submitted. Admins notified via SMS.'); }).catch(function(e) { showToast(e.message, 'error'); });
+}
+function approveLoan(lid) { api('PUT', '/loans/' + lid + '/approve').then(function(d) { showToast(d.status === 'approved' ? 'Loan fully approved!' : 'Partially approved (1/2)'); renderLoans(); }).catch(function(e) { showToast(e.message, 'error'); }); }
+function openRejectLoanModal(lid) { openModal('Reject Loan', '<form onsubmit="rejectLoan(event,\'' + lid + '\')"><div class="form-group"><label>Reason</label><textarea class="form-input" id="reject-reason" required></textarea></div><button type="submit" class="btn btn-danger btn-full">Reject</button></form>'); }
+function rejectLoan(e, lid) { e.preventDefault(); api('PUT', '/loans/' + lid + '/reject', { reason: document.getElementById('reject-reason').value.trim() }).then(function() { closeModal(); renderLoans(); showToast('Loan rejected', 'warning'); }).catch(function(e) { showToast(e.message, 'error'); }); }
+function disburseLoan(lid) { api('PUT', '/loans/' + lid + '/disburse').then(function() { renderLoans(); showToast('Loan disbursed'); }).catch(function(e) { showToast(e.message, 'error'); }); }
+
+function renderPayments() {
+    var el = document.getElementById('page-content');
+    var isAdmin = currentUser.role === 'admin';
+    if (isAdmin) document.getElementById('page-actions').innerHTML = '<button class="btn btn-primary btn-sm" onclick="openAddPayModal()"><i class="fas fa-plus"></i> Add Method</button>';
+    el.innerHTML = loadHTML();
+    api('GET', '/payment-methods').then(function(methods) {
+        var html = methods.map(function(m) {
+            var ic = m.type === 'mpesa' ? 'mpesa' : m.type === 'bank' ? 'bank' : 'other';
+            var fa = m.type === 'mpesa' ? 'fa-mobile-alt' : m.type === 'bank' ? 'fa-university' : 'fa-wallet';
+            var btns = isAdmin ? '<div style="display:flex;gap:6px;flex-shrink:0"><button class="btn btn-secondary btn-sm" onclick="openEditPayModal(\'' + m._id + '\')"><i class="fas fa-edit"></i></button><button class="btn btn-secondary btn-sm" onclick="togglePM(\'' + m._id + '\')">' + (m.active ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>') + '</button><button class="btn btn-danger btn-sm" onclick="deletePM(\'' + m._id + '\')"><i class="fas fa-trash"></i></button></div>' : '';
+            return '<div class="payment-card"><div class="pay-icon ' + ic + '"><i class="fas ' + fa + '"></i></div><div style="flex:1"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="pay-name">' + m.label + '</div><span class="badge ' + (m.active ? 'badge-approved' : 'badge-rejected') + '">' + (m.active ? 'Active' : 'Inactive') + '</span></div><div class="pay-detail">' + m.name + (m.number ? ' - ' + m.number : '') + '</div>' + (m.instructions ? '<div class="pay-instructions">' + m.instructions + '</div>' : '') + '</div>' + btns + '</div>';
+        }).join('');
+        var note = !isAdmin ? '<div class="data-card" style="margin-top:16px"><div class="data-card-body" style="padding:14px"><p style="font-size:13px;color:var(--fg2)"><i class="fas fa-info-circle"></i> Use the details above to pay. Contributions auto-verify via M-Pesa.</p></div></div>' : '';
+        el.innerHTML = '<div class="view-section">' + html + note + '</div>';
+    }).catch(function() { el.innerHTML = errHTML('Failed to load'); });
+}
+
+function openAddPayModal() {
+    openModal('Add Payment Method', '<form onsubmit="savePM(event,\'\')"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label>Type</label><select class="form-input" id="pm-type"><option value="mpesa">M-Pesa</option><option value="bank">Bank Account</option><option value="other">Other</option></select></div><div class="form-group"><label>Label</label><input class="form-input" id="pm-label" required placeholder="e.g. M-Pesa, KCB"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label>Account Name</label><input class="form-input" id="pm-name" required></div><div class="form-group"><label>Number/Account</label><input class="form-input" id="pm-number"></div></div><div class="form-group"><label>Instructions</label><textarea class="form-input" id="pm-instr"></textarea></div><button type="submit" class="btn btn-primary btn-full">Save</button></form>');
+}
+
+function openEditPayModal(pmid) {
+    api('GET', '/payment-methods').then(function(methods) {
+        var m = methods.find(function(x) { return x._id === pmid; });
+        if (!m) return;
+        function sel(v) { return '<option value="' + v + '"' + (m.type === v ? ' selected' : '') + '>' + v + '</option>'; }
+        openModal('Edit Payment Method', '<form onsubmit="savePM(event,\'' + pmid + '\')"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label>Type</label><select class="form-input" id="pm-type">' + sel('mpesa') + sel('bank') + sel('other') + '</select></div><div class="form-group"><label>Label</label><input class="form-input" id="pm-label" value="' + m.label + '" required></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label>Account Name</label><input class="form-input" id="pm-name" value="' + m.name + '" required></div><div class="form-group"><label>Number/Account</label><input class="form-input" id="pm-number" value="' + (m.number || '') + '"></div></div><div class="form-group"><label>Instructions</label><textarea class="form-input" id="pm-instr">' + (m.instructions || '') + '</textarea></div><button type="submit" class="btn btn-primary btn-full">Update</button></form>');
+    }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function savePM(e, editId) {
+    e.preventDefault();
+    var body = { type: document.getElementById('pm-type').value, label: document.getElementById('pm-label').value.trim(), name: document.getElementById('pm-name').value.trim(), number: document.getElementById('pm-number').value.trim(), instructions: document.getElementById('pm-instr').value.trim() };
+    var p = editId ? api('PUT', '/payment-methods/' + editId, body) : api('POST', '/payment-methods', body);
+    p.then(function() { closeModal(); renderPayments(); showToast(editId ? 'Updated' : 'Added'); }).catch(function(e) { showToast(e.message, 'error'); });
+}
+function togglePM(pmid) { api('PUT', '/payment-methods/' + pmid + '/toggle').then(function() { renderPayments(); showToast('Toggled', 'info'); }).catch(function(e) { showToast(e.message, 'error'); }); }
+function deletePM(pmid) { api('DELETE', '/payment-methods/' + pmid).then(function() { renderPayments(); showToast('Removed', 'warning'); }).catch(function(e) { showToast(e.message, 'error'); }); }
+
+function renderMembers() {
+    var el = document.getElementById('page-content');
+    el.innerHTML = loadHTML();
+    api('GET', '/members').then(function(members) {
+        var trows = members.map(function(m) {
+            return '<tr><td><strong>' + m.name + '</strong></td><td>' + m.email + '</td><td>' + m.phone + '</td><td>KES ' + m.totalContrib.toLocaleString() + '</td><td>' + m.loanCount + '</td><td>' + new Date(m.createdAt).toLocaleDateString() + '</td><td><button class="btn btn-secondary btn-sm" onclick="openResetPW(\'' + m._id + '\',\'' + m.name + '\')">Reset PW</button></td></tr>';
+        }).join('');
+        el.innerHTML = '<div class="view-section"><div class="stat-grid"><div class="stat-card gold"><div class="stat-icon"><i class="fas fa-user-friends"></i></div><div class="stat-value">' + members.length + '</div><div class="stat-label">Total Members</div></div></div><div class="data-card"><div class="data-card-header"><h3>All Members</h3></div><div class="data-card-body"><div class="table-wrap"><table><tr><th>Name</th><th>Email</th><th>Phone</th><th>Contributed</th><th>Loans</th><th>Joined</th><th>Actions</th></tr>' + (trows || '<tr><td colspan="7" style="text-align:center;color:var(--fg2)">No members</td></tr>') + '</table></div></div></div></div>';
+    }).catch(function() { el.innerHTML = errHTML('Failed to load members'); });
+}
+
+function openResetPW(mid, name) {
+    openModal('Reset Password', '<form onsubmit="doResetPW(event,\'' + mid + '\')"><p style="color:var(--fg2);margin-bottom:16px">Reset password for <strong>' + name + '</strong></p><div class="form-group"><label>New Password</label><input type="password" class="form-input" id="reset-pw" required minlength="6"></div><button type="submit" class="btn btn-primary btn-full">Reset Password</button></form>');
+}
+function doResetPW(e, mid) {
+    e.preventDefault();
+    api('PUT', '/members/' + mid + '/reset-password', { password: document.getElementById('reset-pw').value }).then(function() { closeModal(); showToast('Password reset. SMS sent.'); }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function renderSettings() {
+    var el = document.getElementById('page-content');
+    el.innerHTML = '<div class="view-section">' +
+        '<div class="data-card"><div class="data-card-header"><h3>Admin Profile</h3></div><div class="data-card-body"><form onsubmit="updateProfile(event)"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label>Name</label><input class="form-input" id="s-name" value="' + currentUser.name + '" required></div><div class="form-group"><label>Email</label><input class="form-input" id="s-email" value="' + (currentUser.email || '') + '" required></div></div><div class="form-group"><label>Phone</label><input class="form-input" id="s-phone" value="' + currentUser.phone + '"></div><button type="submit" class="btn btn-primary">Update Profile</button></form></div></div>' +
+        '<div class="data-card"><div class="data-card-header"><h3>Change Password</h3></div><div class="data-card-body"><form onsubmit="changePW(event)"><div class="form-group"><label>Current Password</label><input type="password" class="form-input" id="s-cpw" required></div><div class="form-group"><label>New Password</label><input type="password" class="form-input" id="s-npw" required minlength="6"></div><div class="form-group"><label>Confirm New Password</label><input type="password" class="form-input" id="s-cpw2" required></div><button type="submit" class="btn btn-primary">Change Password</button></form></div></div>' +
+        '<div class="data-card" style="border-color:var(--danger)"><div class="data-card-header"><h3 style="color:var(--danger)">Danger Zone</h3></div><div class="data-card-body"><p style="color:var(--fg2);font-size:14px;margin-bottom:12px">Reset ALL data except admin accounts. Cannot be undone.</p><button class="btn btn-danger" onclick="confirmReset()"><i class="fas fa-exclamation-triangle"></i> Reset All Data</button></div></div></div>';
+}
+
+function updateProfile(e) {
+    e.preventDefault();
+    api('PUT', '/admin/profile', { name: document.getElementById('s-name').value.trim(), email: document.getElementById('s-email').value.trim(), phone: document.getElementById('s-phone').value.trim() }).then(function(u) { currentUser = u; setupSidebar(); showToast('Profile updated'); }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function changePW(e) {
+    e.preventDefault();
+    api('PUT', '/admin/password', { currentPassword: document.getElementById('s-cpw').value, newPassword: document.getElementById('s-npw').value, confirmPassword: document.getElementById('s-cpw2').value }).then(function() { showToast('Password changed'); e.target.reset(); }).catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function confirmReset() {
+    openModal('Confirm Reset', '<p style="color:var(--fg2);margin-bottom:16px">Delete all players, contributions, loans, gallery, members, and settings? Admin accounts stay.</p><div style="display:flex;gap:10px"><button class="btn btn-danger" onclick="doReset()">Yes, Reset Everything</button><button class="btn btn-secondary" onclick="closeModal()">Cancel</button></div>');
+}
+function doReset() { api('POST', '/reset-data').then(function() { closeModal(); showToast('Data reset', 'warning'); navigateTo('dashboard'); }).catch(function(e) { showToast(e.message, 'error'); }); }
+
+tryRestoreSession();
+
+function checkMobile() { var t = document.getElementById('mobile-toggle'); if (t) t.style.display = window.innerWidth <= 768 ? 'block' : 'none'; }
+window.addEventListener('resize', checkMobile);
+checkMobile();
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeModal(); closeLightbox(); } });
+</script>
+</body>
+</html>
